@@ -284,4 +284,4 @@ class SceneStats:
         distribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
         for s in self.scenes:
             if s.rating100 is not None:
-                stars = min(5, max(1
+                stars = min(5, max(1, round(rating / 20)))
