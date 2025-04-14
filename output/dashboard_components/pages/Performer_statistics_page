@@ -1,0 +1,175 @@
+"""
+Dashboard Performer Statistics Page
+
+Dieses Modul erstellt die Performer-Statistikseite des Dashboards.
+"""
+
+import logging
+from typing import Dict, List, Any
+
+import dash
+from dash import dcc, html
+import dash_bootstrap_components as dbc
+import plotly.express as px
+import plotly.graph_objects as go
+
+from core.data_models import Performer
+
+# Logger konfigurieren
+logger = logging.getLogger(__name__)
+
+def create_page(module_data: Dict[str, Any]) -> html.Div:
+    """
+    Erstellt die Performer-Statistikseite des Dashboards.
+    
+    Args:
+        module_data: Daten der verschiedenen Module
+        
+    Returns:
+        html.Div: Die Performer-Statistikseite
+    """
+    try:
+        # Extrahiere die benötigten Module aus den Daten
+        stats_module = module_data['stats_module']
+        
+        # Lade detaillierte Performer-Statistiken
+        stats = stats_module.get_performer_stats()
+        
+        # Erstelle verschiedene Abschnitte mit Statistiken und Grafiken
+        sections = []
+        
+        # Cup-Größen-Statistiken
+        if "cup_stats" in stats:
+            cup_stats = stats["cup_stats"]
+            
+            cup_stats_section = html.Div([
+                html.H2("Cup-Größen-Statistiken", className="mb-3"),
+                dbc.Row([
+                    dbc.Col(
+                        dbc.Card(
+                            dbc.CardBody([
+                                html.H4("Durchschnitt", className="card-title"),
+                                html.H2(f"{cup_stats.get('mean', 0):.2f} ({cup_stats.get('mean_letter', '?')})", 
+                                        className="card-text text-center"),
+                            ]),
+                            className="mb-4 text-center"
+                        ),
+                        width=12, md=4
+                    ),
+                    dbc.Col(
+                        dbc.Card(
+                            dbc.CardBody([
+                                html.H4("Minimum", className="card-title"),
+                                html.H2(f"{cup_stats.get('min', 0)} ({cup_stats.get('min_letter', '?')})", 
+                                        className="card-text text-center"),
+                            ]),
+                            className="mb-4 text-center"
+                        ),
+                        width=12, md=4
+                    ),
+                    dbc.Col(
+                        dbc.Card(
+                            dbc.CardBody([
+                                html.H4("Maximum", className="card-title"),
+                                html.H2(f"{cup_stats.get('max', 0)} ({cup_stats.get('max_letter', '?')})", 
+                                        className="card-text text-center"),
+                            ]),
+                            className="mb-4 text-center"
+                        ),
+                        width=12, md=4
+                    ),
+                ]),
+                
+                # Histogramm der Cup-Größen
+                dbc.Row([
+                    dbc.Col(
+                        dcc.Graph(
+                            figure=px.histogram(
+                                x=cup_stats.get("numeric_cup_values", []),
+                                labels={"x": "Cup-Größe (numerisch)"},
+                                title="Verteilung der Cup-Größen"
+                            )
+                        ),
+                        width=12, lg=6
+                    ),
+                    dbc.Col(
+                        dcc.Graph(
+                            figure=go.Figure(
+                                data=[
+                                    go.Bar(
+                                        x=cup_stats.get("sorted_cup_sizes", []),
+                                        y=[stats.get("cup_distribution", {}).get(cup, 0) 
+                                           for cup in cup_stats.get("sorted_cup_sizes", [])]
+                                    )
+                                ],
+                                layout=go.Layout(
+                                    title="Cup-Größen nach Häufigkeit",
+                                    xaxis_title="Cup-Größe",
+                                    yaxis_title="Anzahl"
+                                )
+                            )
+                        ),
+                        width=12, lg=6
+                    )
+                ])
+            ])
+            sections.append(cup_stats_section)
+        
+        # BMI- und Gewichtsstatistiken
+        bmi_section = html.Div([
+            html.H2("BMI- und Gewichtsstatistiken", className="mb-3 mt-4"),
+            dbc.Row([
+                dbc.Col(
+                    dcc.Graph(
+                        figure=px.pie(
+                            names=list(stats.get("bmi_distribution", {}).keys()),
+                            values=list(stats.get("bmi_distribution", {}).values()),
+                            title="BMI-Kategorien"
+                        )
+                    ),
+                    width=12, lg=6
+                ),
+                dbc.Col(
+                    dcc.Graph(
+                        figure=px.scatter(
+                            x=[p.bmi for p in stats_module.performers if p.bmi is not None],
+                            y=[p.cup_numeric for p in stats_module.performers if p.bmi is not None and p.cup_numeric > 0],
+                            labels={"x": "BMI", "y": "Cup-Größe (numerisch)"},
+                            title="BMI vs. Cup-Größe"
+                        )
+                    ),
+                    width=12, lg=6
+                )
+            ])
+        ])
+        sections.append(bmi_section)
+        
+        # Altersstatistiken
+        age_section = html.Div([
+            html.H2("Altersstatistiken", className="mb-3 mt-4"),
+            dbc.Row([
+                dbc.Col(
+                    dcc.Graph(
+                        figure=px.bar(
+                            x=list(stats.get("age_distribution", {}).keys()),
+                            y=list(stats.get("age_distribution", {}).values()),
+                            labels={"x": "Altersgruppe", "y": "Anzahl"},
+                            title="Altersverteilung"
+                        )
+                    ),
+                    width=12, lg=6
+                ),
+                dbc.Col(
+                    dcc.Graph(
+                        figure=px.scatter(
+                            x=[p.age for p in stats_module.performers if p.age is not None],
+                            y=[p.cup_numeric for p in stats_module.performers if p.age is not None and p.cup_numeric > 0],
+                            labels={"x": "Alter", "y": "Cup-Größe (numerisch)"},
+                            title="Alter vs. Cup-Größe"
+                        )
+                    ),
+                    width=12, lg=6
+                )
+            ])
+        ])
+        sections.append(age_section)
