@@ -32,6 +32,7 @@ def create_layout():
         html.Br(),
 
         html.H2("Performer Empfehlungen"),
+        html.Br(), # Hier war im vorherigen Code kein html.Br()
         if performer_recs:
             html.Ul([html.Li(rec) for rec in performer_recs]), # Annahme: performer_recs ist eine Liste von Strings
         else:
@@ -39,6 +40,7 @@ def create_layout():
         html.Br(),
 
         html.H2("Szenen Empfehlungen"),
+        html.Br(), # Hier war im vorherigen Code kein html.Br()
         if scene_recs:
             html.Ul([html.Li(rec) for rec in scene_recs]), # Annahme: scene_recs ist eine Liste von Strings
         else:
