@@ -27,28 +27,32 @@ def create_layout():
     performer_recs = load_recommendations(PERFORMER_REC_FILE)
     scene_recs = load_recommendations(SCENE_REC_FILE)
 
-    layout = html.Div([
+    children = [
         html.H1("Empfehlungen"),
         html.Br(),
-
         html.H2("Performer Empfehlungen"),
-        html.Br(), # Hier war im vorherigen Code kein html.Br()
-        if performer_recs:
-            html.Ul([html.Li(rec) for rec in performer_recs]), # Annahme: performer_recs ist eine Liste von Strings
-        else:
-            html.P("Keine Performer-Empfehlungen verfügbar."),
         html.Br(),
+    ]
 
+    if performer_recs:
+        children.append(html.Ul([html.Li(rec) for rec in performer_recs]))
+    else:
+        children.append(html.P("Keine Performer-Empfehlungen verfügbar."))
+
+    children.extend([
+        html.Br(),
         html.H2("Szenen Empfehlungen"),
-        html.Br(), # Hier war im vorherigen Code kein html.Br()
-        if scene_recs:
-            html.Ul([html.Li(rec) for rec in scene_recs]), # Annahme: scene_recs ist eine Liste von Strings
-        else:
-            html.P("Keine Szenen-Empfehlungen verfügbar."),
         html.Br(),
-
-        # Hier könnten weitere Details oder Visualisierungen hinzugefügt werden
     ])
+
+    if scene_recs:
+        children.append(html.Ul([html.Li(rec) for rec in scene_recs]))
+    else:
+        children.append(html.P("Keine Szenen-Empfehlungen verfügbar."))
+
+    children.append(html.Br()) # Zusätzliches <br> am Ende
+
+    layout = html.Div(children)
 
     return layout
 
