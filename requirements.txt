@@ -1,0 +1,32 @@
+# Core Dependencies
+requests>=2.25.0
+python-dateutil>=2.8.2
+configparser>=5.0.0
+typing-extensions>=4.0.0
+
+# Data Analysis
+numpy>=1.20.0
+pandas>=1.3.0
+scipy>=1.7.0
+
+# Visualization
+matplotlib>=3.4.0
+seaborn>=0.11.0
+plotly>=5.0.0
+
+# Dashboard
+dash>=2.0.0
+dash-bootstrap-components>=1.0.0
+flask>=2.0.0
+
+# Discord Integration
+discord-webhook>=1.0.0
+Pillow>=8.0.0  # For image processing
+
+# Web Scraping (for Boobpedia, etc.)
+beautifulsoup4>=4.9.0
+lxml>=4.6.0
+
+# Utilities
+tqdm>=4.60.0  # Progress bars
+pyyaml>=6.0   # YAML parsing
