@@ -25,7 +25,7 @@ from analysis.visualization_correlations import CorrelationVisualization
 from analysis.visualization_tags import TagVisualization
 from analysis.visualization_o_counter import OCounterVisualization
 from analysis.visualization_dashboard import DashboardVisualization
-from analysis.visualization_export import VisualizationExport
+from analysis.visualization_export import VisualizationExporter
 
 # Logger konfigurieren
 logger = logging.getLogger(__name__)
