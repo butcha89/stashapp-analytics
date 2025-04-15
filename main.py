@@ -26,7 +26,6 @@ try:
     from analysis.visualization_module import VisualizationModule
     from recommendations.recommendation_performer import PerformerRecommendationModule
     from recommendations.recommendation_scenes import SceneRecommendationModule
-    from output.dashboard_module import DashboardModule
     from output.discord_module import DiscordModule
     from management.updater_module import UpdaterModule
 except ImportError as e:
@@ -170,24 +169,6 @@ def run_scene_recommendations(api, stats_module, performer_rec_module, config):
     logging.info("Szenen-Empfehlungen erfolgreich generiert")
     return rec_module
 
-def run_dashboard(api, stats_module, performer_rec_module, scene_rec_module, config):
-    """
-    Startet das interaktive Dashboard.
-    
-    Args:
-        api: StashAPI-Instanz
-        stats_module: StatisticsModule-Instanz mit berechneten Statistiken
-        performer_rec_module: PerformerRecommendationModule-Instanz mit Empfehlungen
-        scene_rec_module: SceneRecommendationModule-Instanz mit Empfehlungen
-        config: ConfigManager-Instanz
-    """
-    logging.info("Starte Dashboard...")
-    
-    dashboard = DashboardModule(api, stats_module, performer_rec_module, scene_rec_module, config)
-    dashboard.run()
-    
-    logging.info("Dashboard beendet")
-
 def run_discord_updates(api, stats_module, performer_rec_module, scene_rec_module, config):
     """
     Sendet Updates an Discord.
@@ -251,9 +232,6 @@ def parse_arguments():
     parser.add_argument('--rec-scenes', action='store_true',
                        help='Generiere Szenen-Empfehlungen')
     
-    parser.add_argument('--dashboard', action='store_true',
-                       help='Starte interaktives Dashboard')
-    
     parser.add_argument('--discord', action='store_true',
                        help='Sende Updates an Discord')
     
@@ -302,14 +280,13 @@ def main():
         run_visualizations_flag = args.vis or run_all
         run_performer_recommendations_flag = args.rec_performers or run_all
         run_scene_recommendations_flag = args.rec_scenes or run_all
-        run_dashboard_flag = args.dashboard or run_all
         run_discord_updates_flag = args.discord or run_all
         run_updater_flag = args.update or run_all
         
         # Wenn keine spezifischen Aktionen angegeben wurden, Hilfe anzeigen
         if not any([run_statistics_flag, run_visualizations_flag, 
                   run_performer_recommendations_flag, run_scene_recommendations_flag,
-                  run_dashboard_flag, run_discord_updates_flag, run_updater_flag]):
+                  run_discord_updates_flag, run_updater_flag]):
             print("Keine Aktion angegeben. Nutze --help für eine Liste der verfügbaren Aktionen.")
             return
         
@@ -351,15 +328,6 @@ def main():
             if not scene_rec_module:
                 scene_rec_module = run_scene_recommendations(api, stats_module, performer_rec_module, config)
             run_discord_updates(api, stats_module, performer_rec_module, scene_rec_module, config)
-        
-        if run_dashboard_flag:
-            if not stats_module:
-                stats_module = run_statistics(api, config)
-            if not performer_rec_module:
-                performer_rec_module = run_performer_recommendations(api, stats_module, config)
-            if not scene_rec_module:
-                scene_rec_module = run_scene_recommendations(api, stats_module, performer_rec_module, config)
-            run_dashboard(api, stats_module, performer_rec_module, scene_rec_module, config)
         
         # Laufzeit berechnen
         end_time = time.time()
