@@ -5,10 +5,10 @@ Diese Anleitung erklärt die Verwendung des StashApp Analytics-Tools und beschre
 ## Inhaltsverzeichnis
 
 1. [Überblick](#überblick)
-2. [Kommandozeilenoptionen](#kommandozeilenoptionen)
+2. [Kommandozeilenoptionen](#kommandozeilenoptionen)  
 3. [Statistikmodule](#statistikmodule)
 4. [Performer-Empfehlungen](#performer-empfehlungen)
-5. [Szenen-Empfehlungen](#szenen-empfehlungen)
+5. [Szenen-Empfehlungen](#szenen-empfehlungen)  
 6. [Dashboard](#dashboard)
 7. [Discord-Integration](#discord-integration)
 8. [Metadaten-Aktualisierung](#metadaten-aktualisierung)
@@ -20,7 +20,7 @@ Diese Anleitung erklärt die Verwendung des StashApp Analytics-Tools und beschre
 StashApp Analytics bietet verschiedene Module zur Analyse, Empfehlung und Visualisierung deiner StashApp-Daten. Die Funktionalität ist in mehrere Komponenten aufgeteilt:
 
 - **Statistik**: Analysiert Performer-Daten und erstellt detaillierte Statistiken
-- **Visualisierung**: Erstellt Grafiken und Diagramme aus den Statistikdaten
+- **Visualisierung**: Erstellt Grafiken und Diagramme aus den Statistikdaten  
 - **Empfehlungen**: Generiert Vorschläge für ähnliche Performer und interessante Szenen
 - **Dashboard**: Bietet eine interaktive Weboberfläche zur Anzeige aller Informationen
 - **Discord**: Sendet Updates und Empfehlungen an einen Discord-Kanal
@@ -31,7 +31,7 @@ StashApp Analytics bietet verschiedene Module zur Analyse, Empfehlung und Visual
 Das Tool kann über die Kommandozeile mit verschiedenen Optionen gesteuert werden:
 
 ```bash
-python main.py [Optionen]
+python main.py [Optionen]  
 ```
 
 Verfügbare Optionen:
@@ -39,14 +39,14 @@ Verfügbare Optionen:
 | Option | Beschreibung |
 |--------|--------------|
 | `-c, --config` | Pfad zur Konfigurationsdatei (Standard: configuration.ini) |
-| `--stats` | Führt statistische Analysen durch |
-| `--vis` | Erstellt Visualisierungen |
-| `--rec-performers` | Generiert Performer-Empfehlungen |
-| `--rec-scenes` | Generiert Szenen-Empfehlungen |
-| `--dashboard` | Startet das interaktive Dashboard |
-| `--discord` | Sendet Updates an Discord |
-| `--update` | Aktualisiert Performer-Metadaten |
-| `--all` | Führt alle oben genannten Aktionen aus |
+| `--stats` | Führe Statistikanalyse aus |
+| `--vis` | Erstelle Visualisierungen |
+| `--rec-performers` | Generiere Performer-Empfehlungen |  
+| `--rec-scenes` | Generiere Szenen-Empfehlungen |
+| `--dashboard` | Starte interaktives Dashboard |
+| `--discord` | Sende Updates an Discord |
+| `--update` | Aktualisiere Performer-Metadaten |
+| `--all` | Führe alle oben genannten Aktionen aus |
 
 **Beispiele:**
 
@@ -56,7 +56,7 @@ python main.py --stats
 ```
 
 Statistiken berechnen und visualisieren:
-```bash
+```bash 
 python main.py --stats --vis
 ```
 
@@ -67,7 +67,7 @@ python main.py --stats --vis --rec-performers --rec-scenes --dashboard --discord
 
 Alternative Konfigurationsdatei verwenden:
 ```bash
-python main.py --all -c meine_config.ini
+python main.py --all -c meine_config.ini  
 ```
 
 ## Statistikmodule
@@ -78,14 +78,14 @@ Das Statistikmodul analysiert die Daten aus StashApp und generiert verschiedene 
 
 #### Performer-Statistiken:
 - Verteilung der Cup-Größen (Zählung, Prozentsatz, Diagramme)
-- BMI-Verteilung und Kategorien
+- BMI-Verteilung und Kategorien  
 - Altersverteilung
 - Bewertungsverteilung
 - O-Counter-Verteilung
-- Durchschnittswerte für alle Maße
+- Durchschnittswerte für alle Maße 
 - Korrelationen zwischen verschiedenen Attributen
 
-#### Szenen-Statistiken:
+#### Szenen-Statistiken: 
 - Häufigste Tags in gut bewerteten Szenen
 - Verteilung von Szenen nach Performer-Attributen
 - Zeitliche Verteilung (wann wurden Szenen am häufigsten angesehen)
@@ -103,15 +103,15 @@ Die Ergebnisse werden im konfigurierten Output-Verzeichnis als Text- und JSON-Da
 
 Das Performer-Empfehlungsmodul findet Performer, die aufgrund verschiedener Kriterien interessant sein könnten:
 
-### Empfehlungskriterien
+### Empfehlungskriterien  
 
 - **Ähnliche Cup-Größe**: Performer mit ähnlichen Cup-Größen wie Favoriten
-- **Ähnliche Körperproportionen**: Performer mit ähnlichen BMI/Cup-Größe und Größe/Cup-Größe Verhältnissen
+- **Ähnliche Körperproportionen**: Performer mit ähnlichen BMI/Cup-Größe und Größe/Cup-Größe Verhältnissen 
 - **Tag-Ähnlichkeit**: Performer mit ähnlichen Tags wie Favoriten
 - **Szenen-Typen**: Performer, die in ähnlichen Szenen-Kategorien auftreten
-- **Altersspanne**: Performer im ähnlichen Altersbereich wie Favoriten
+- **Altersspanne**: Performer im ähnlichen Altersbereich wie Favoriten  
 - **Neuheit**: Kürzlich hinzugefügte Performer, die deinen Präferenzen entsprechen
-- **Szenen-Qualität**: Performer mit hochbewerteten Szenen
+- **Szenen-Qualität**: Performer mit hochbewerteten Szenen 
 - **Vielseitigkeit**: Performer, die in verschiedenen Arten von Szenen auftreten
 - **Performer mit niedrigem O-Counter**: Potentiell interessante Performer, die noch nicht oft angesehen wurden
 
@@ -123,10 +123,11 @@ Die relative Wichtigkeit der verschiedenen Kriterien kann in der Konfigurationsd
 [Recommendations]
 weight_cup_size = 0.4
 bmi_cup_size = 0.2
-height_cup_size = 0.2
+height_cup_size = 0.2 
 weight_tag_similarity = 0.6
 # ... weitere Einstellungen
 ```
+
 
 ### Verwendung
 
