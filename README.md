@@ -8,7 +8,7 @@ Ein modulares System zur Datenanalyse und Empfehlung für [StashApp](https://git
 - **Visuelle Darstellungen**: Grafische Darstellung von statistischen Daten in verschiedenen Diagrammtypen
 - **Performer-Empfehlungen**: Intelligente Vorschläge basierend auf Ähnlichkeiten zu Favoriten
 - **Szenen-Empfehlungen**: Szenenvorschläge basierend auf Tags und O-Counter-Statistiken
-- **Dashboard**: Interaktives Web-Dashboard zur Anzeige aller Daten und Empfehlungen
+- **Dashboard**: Interaktives Web-Dashboard zur Anzeige aller Daten und Empfehlungen 
 - **Discord-Integration**: Automatischer Versand von Updates und Empfehlungen an Discord
 - **Metadaten-Aktualisierung**: Automatisches Tagging basierend auf berechneten Werten
 
@@ -31,7 +31,7 @@ Das Projekt ist in mehrere Module aufgeteilt, um die Wartbarkeit und Erweiterbar
 
 ### Ausgabe-Module:
 - **dashboard_module.py**: Interaktives Web-Dashboard
-- **discord_module.py**: Discord-Integration
+- **discord_module.py**: Discord-Integration 
 
 ### Verwaltungs-Module:
 - **updater_module.py**: Aktualisierung von Metadaten in StashApp
@@ -65,7 +65,7 @@ python main.py --all
 
 ### Nur bestimmte Funktionen ausführen
 ```bash
-# Nur Statistiken berechnen
+# Nur Statistiken berechnen 
 python main.py --stats
 
 # Statistiken berechnen und visualisieren
@@ -77,7 +77,7 @@ python main.py --dashboard
 # Empfehlungen generieren
 python main.py --rec-performers --rec-scenes
 
-# Discord-Updates senden
+# Discord-Updates senden  
 python main.py --discord
 ```
 
@@ -86,30 +86,42 @@ python main.py --discord
 Die Konfiguration erfolgt über die `configuration.ini` Datei. Hier sind die wichtigsten Einstellungen:
 
 ### StashApp-Verbindung
-```ini
+```ini 
 [StashApp]
-url = http://localhost:9999
+url = http://localhost:9999  
 api_key = DEIN_API_KEY
 ssl_verify = False
 ```
 
 ### Empfehlungseinstellungen
 ```ini
-[Recommendations]
+[Recommendations] 
 min_similarity_score = 0.75
-max_recommendations = 10
+max_recommendations = 10 
 include_zero_counter = True
 weight_cup_size = 0.4
-bmi_cup_size = 0.2
+bmi_cup_size = 0.2 
 height_cup_size = 0.2
 ```
 
 ### Discord-Integration
 ```ini
 [Discord]
-enable_discord = True
+enable_discord = True  
 webhook_url = https://discord.com/api/webhooks/...
 post_schedule = daily
+```
+
+### Logging & Erweitert
+```ini
+[Logging]
+log_level = INFO
+log_file = stashapp_analytics.log
+
+[Advanced]  
+workers = 4
+connection_timeout = 30
+cache_ttl = 3600
 ```
 
 Vollständige Konfigurationsoptionen findest du in der `configuration.ini.example` Datei.
@@ -118,18 +130,18 @@ Vollständige Konfigurationsoptionen findest du in der `configuration.ini.exampl
 
 Das Dashboard bietet eine interaktive Oberfläche zur Anzeige aller Statistiken und Empfehlungen.
 
-1. **Starten des Dashboards**
+1. **Starten des Dashboards** 
    ```bash
    python main.py --dashboard
    ```
 
-2. **Zugriff auf das Dashboard**
+2. **Zugriff auf das Dashboard**  
    Öffne in deinem Browser: http://localhost:8080 (oder die in der Konfiguration festgelegte URL)
 
-Das Dashboard enthält:
+Das Dashboard enthält: 
 - Übersicht mit wichtigen Kennzahlen
 - Detaillierte Performer-Statistiken mit Diagrammen
-- Szenen-Statistiken und O-Counter-Analysen
+- Szenen-Statistiken und O-Counter-Analysen  
 - Empfehlungen für Performer und Szenen
 
 ## Automatisierung
@@ -142,13 +154,13 @@ Du kannst regelmäßige Analysen und Updates einrichten:
 0 3 * * * cd /pfad/zu/stashapp-analytics && /pfad/zu/python main.py --all > /pfad/zu/log.txt 2>&1
 ```
 
-### Task Scheduler (Windows)
+### Task Scheduler (Windows) 
 Erstelle eine geplante Aufgabe, die regelmäßig `python main.py --all` ausführt.
 
 ## Dokumentation
 
 Ausführliche Dokumentation findest du in den folgenden Dateien:
-- [docs/SETUP.md](docs/SETUP.md): Detaillierte Installationsanleitung
+- [docs/SETUP.md](docs/SETUP.md): Detaillierte Installationsanleitung  
 - [docs/USAGE.md](docs/USAGE.md): Ausführliche Bedienungsanleitung
 
 ## Mitwirken
