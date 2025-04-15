@@ -145,24 +145,14 @@ class PerformerStats:
             "numeric_cup_values": cup_sizes
         }
     
-    def get_top_o_counter_by_cup_size(self) -> Dict[str, List[Performer]]:
-        """Ermittelt die Performer mit dem höchsten O-Counter für jede Cup-Größe."""
-        result = {}
-        performers_by_cup = {}
-        
-        # Gruppiere Performer nach Cup-Größe
-        for p in self.performers:
-            if p.cup_size and p.o_counter > 0:
-                if p.cup_size not in performers_by_cup:
-                    performers_by_cup[p.cup_size] = []
-                performers_by_cup[p.cup_size].append(p)
-        
-        # Sortiere nach O-Counter und wähle Top-3
-        for cup, cup_performers in performers_by_cup.items():
-            sorted_performers = sorted(cup_performers, key=lambda p: p.o_counter, reverse=True)
-            result[cup] = sorted_performers[:3]
-        
-        return result
+    def get_top_o_counter_performers(self, limit: int = 10) -> List[Performer]:
+        """Ermittelt die Performer mit dem höchsten O-Counter."""
+        sorted_performers = sorted(
+            [p for p in self.performers if p.o_counter > 0],
+            key=lambda p: p.o_counter,
+            reverse=True
+        )
+        return sorted_performers[:limit]
     
     def get_similar_performers(self, performer: Performer, 
                                min_similarity: float = 0.7, 
@@ -284,4 +274,107 @@ class SceneStats:
         distribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
         for s in self.scenes:
             if s.rating100 is not None:
-                stars = min(5, max(1, round(rating / 20)))
+                stars = min(5, max(1, round(s.rating100 / 20)))
+                distribution[stars] = distribution.get(stars, 0) + 1
+        return distribution
+    
+    def _calculate_o_counter_distribution(self) -> Dict[int, int]:
+        """Berechnet die Verteilung der O-Counter-Werte."""
+        distribution = {}
+        for s in self.scenes:
+            if s.o_counter > 0:
+                distribution[s.o_counter] = distribution.get(s.o_counter, 0) + 1
+        return distribution
+    
+    def _calculate_tag_distribution(self) -> Dict[str, int]:
+        """Berechnet die Verteilung der Tags."""
+        distribution = {}
+        for s in self.scenes:
+            for tag in s.tags:
+                distribution[tag] = distribution.get(tag, 0) + 1
+        return distribution
+    
+    def _calculate_studio_distribution(self) -> Dict[str, int]:
+        """Berechnet die Verteilung der Studios."""
+        distribution = {}
+        for s in self.scenes:
+            if s.studio_name:
+                distribution[s.studio_name] = distribution.get(s.studio_name, 0) + 1
+        return distribution
+    
+    def _calculate_age_distribution(self) -> Dict[str, int]:
+        """Berechnet die Verteilung des Alters der Szenen (in Monaten)."""
+        distribution = {}
+        for s in self.scenes:
+            if s.date:
+                try:
+                    date = datetime.datetime.strptime(s.date, "%Y-%m-%d")
+                    now = datetime.datetime.now()
+                    age_months = (now.year - date.year) * 12 + now.month - date.month
+                    age_group = f"{age_months // 6 * 6}-{(age_months // 6 + 1) * 6}" # 6-Monats-Intervalle
+                    distribution[age_group] = distribution.get(age_group, 0) + 1
+                except ValueError:
+                    # Ungültiges Datumsformat
+                    pass
+        return distribution
+    
+    def _calculate_popular_tags_in_high_o_counter(self) -> Dict[str, int]:
+        """Berechnet die häufigsten Tags in Szenen mit hohem O-Counter."""
+        # Szenen mit O-Counter im obersten Quartil
+        o_counters = [s.o_counter for s in self.scenes if s.o_counter > 0]
+        if not o_counters:
+            return {}
+        
+        threshold = sorted(o_counters)[int(len(o_counters) * 0.75)]
+        high_o_counter_scenes = [s for s in self.scenes if s.o_counter >= threshold]
+        
+        # Tags in diesen Szenen zählen
+        tag_counts = {}
+        for s in high_o_counter_scenes:
+            for tag in s.tags:
+                tag_counts[tag] = tag_counts.get(tag, 0) + 1
+        
+        return tag_counts
+    
+    def get_scenes_by_performer(self, performer_id: str) -> List[Scene]:
+        """Gibt alle Szenen eines bestimmten Performers zurück."""
+        return [s for s in self.scenes if performer_id in s.performer_ids]
+    
+    def get_most_watched_scenes(self, limit: int = 10) -> List[Scene]:
+        """Gibt die am meisten gesehenen Szenen zurück (nach O-Counter)."""
+        sorted_scenes = sorted(
+            [s for s in self.scenes if s.o_counter > 0],
+            key=lambda s: s.o_counter,
+            reverse=True
+        )
+        return sorted_scenes[:limit]
+    
+    def get_highest_rated_scenes(self, limit: int = 10) -> List[Scene]:
+        """Gibt die am höchsten bewerteten Szenen zurück."""
+        sorted_scenes = sorted(
+            [s for s in self.scenes if s.rating100 is not None],
+            key=lambda s: s.rating100,
+            reverse=True
+        )
+        return sorted_scenes[:limit]
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Konvertiert alle Statistiken in ein Dictionary."""
+        return {
+            "total_count": self.total_count,
+            "rating_distribution": self.rating_distribution,
+            "o_counter_distribution": self.o_counter_distribution,
+            "tag_distribution": {k: v for k, v in sorted(self.tag_distribution.items(), 
+                                                        key=lambda x: x[1], 
+                                                        reverse=True)[:20]}, # Top 20 Tags
+            "studio_distribution": {k: v for k, v in sorted(self.studio_distribution.items(), 
+                                                           key=lambda x: x[1], 
+                                                           reverse=True)[:20]}, # Top 20 Studios
+            "age_distribution": self.age_distribution,
+            "avg_rating": self.avg_rating,
+            "avg_o_counter": self.avg_o_counter,
+            "avg_duration": self.avg_duration,
+            "popular_tags_in_high_o_counter": {k: v for k, v in sorted(self.popular_tags_in_high_o_counter.items(), 
+                                                                    key=lambda x: x[1], 
+                                                                    reverse=True)[:10]} # Top 10 Tags
+        }
