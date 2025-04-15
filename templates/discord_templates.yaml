@@ -1,0 +1,18 @@
+stats_summary: |
+  **Statistik-Zusammenfassung**
+  
+  Anzahl Performer: {total_performers}
+  Anzahl Szenen: {total_scenes}
+  Anzahl Tags: {total_tags}
+  
+  Durchschnittliche Bewertung: {avg_rating:.1f}
+  Durchschnittlicher O-Counter: {avg_o_counter:.1f}
+  
+  Bewertungsverteilung:
+  {rating_dist}
+  
+  Häufigste Tags:
+  {most_common_tags}
+  
+  Top Studios:
+  {top_studios}
