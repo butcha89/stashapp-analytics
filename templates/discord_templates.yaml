@@ -16,3 +16,6 @@ stats_summary: |
   
   Top Studios:
   {top_studios}
+
+  Top Performer:
+  {top_performer}
