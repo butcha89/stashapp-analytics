@@ -24,8 +24,6 @@ from analysis.visualization_scenes import SceneVisualization
 from analysis.visualization_correlations import CorrelationVisualization
 from analysis.visualization_tags import TagVisualization
 from analysis.visualization_o_counter import OCounterVisualization
-from analysis.visualization_dashboard import DashboardVisualization
-from analysis.visualization_export import VisualizationExporter
 
 # Logger konfigurieren
 logger = logging.getLogger(__name__)
@@ -54,7 +52,7 @@ class VisualizationModule:
         
         # Basiskonfiguration laden
         self.output_dir = self.config.get('Output', 'output_dir', fallback='./output')
-        self.visualization_dir = self.config.get('Visualization', 'visualization_dir', 
+        self.visualization_dir = self.config.get('Output', 'visualization_dir', 
                                                 fallback=os.path.join(self.output_dir, 'graphs'))
         
         # Sicherstellen, dass das Ausgabeverzeichnis existiert
@@ -69,8 +67,6 @@ class VisualizationModule:
         self.correlation_viz = CorrelationVisualization(self.core)
         self.tag_viz = TagVisualization(self.core)
         self.o_counter_viz = OCounterVisualization(self.core)
-        self.dashboard_viz = DashboardVisualization(self.core)
-        self.export = VisualizationExport(self.core)
         
         logger.info("Visualisierungs-Hauptmodul initialisiert")
     
@@ -115,17 +111,6 @@ class VisualizationModule:
         logger.info("Erstelle Korrelations-Visualisierungen...")
         created_visualizations.extend(self.correlation_viz.create_correlation_visualizations())
         
-        # Dashboard-Vorschau
-        logger.info("Erstelle Dashboard-Visualisierungen...")
-        created_visualizations.extend(self.dashboard_viz.create_dashboard_preview())
-        
-        # Erstelle Exportdateien, falls konfiguriert
-        if self.config.getboolean('Visualization', 'create_export_package', fallback=False):
-            logger.info("Erstelle Export-Paket...")
-            export_path = self.export.create_export_package(created_visualizations)
-            if export_path:
-                created_visualizations.append(export_path)
-        
         total_visualizations = len(created_visualizations)
         logger.info(f"{total_visualizations} Visualisierungen erfolgreich erstellt")
         
@@ -137,7 +122,7 @@ class VisualizationModule:
         
         Args:
             category: Die Kategorie der zu erstellenden Visualisierungen 
-                     ('performer', 'scene', 'tag', 'o_counter', 'correlation', 'dashboard')
+                     ('performer', 'scene', 'tag', 'o_counter', 'correlation')
             
         Returns:
             List[str]: Liste der Pfade zu den erstellten Visualisierungen
@@ -160,8 +145,6 @@ class VisualizationModule:
             return self.o_counter_viz.create_o_counter_visualizations()
         elif category.lower() == 'correlation':
             return self.correlation_viz.create_correlation_visualizations()
-        elif category.lower() == 'dashboard':
-            return self.dashboard_viz.create_dashboard_preview()
         else:
             logger.warning(f"Unbekannte Visualisierungskategorie: '{category}'")
             return []
@@ -222,8 +205,6 @@ class VisualizationModule:
                 return self.o_counter_viz.create_custom_visualization(visualization_type, params)
             elif visualization_type.startswith('correlation_'):
                 return self.correlation_viz.create_custom_visualization(visualization_type, params)
-            elif visualization_type.startswith('dashboard_'):
-                return self.dashboard_viz.create_custom_visualization(visualization_type, params)
             else:
                 logger.warning(f"Unbekannter Visualisierungstyp: '{visualization_type}'")
                 return None
