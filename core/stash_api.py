@@ -57,118 +57,64 @@ class StashAPI:
             logger.error("Verbindung zu Stash fehlgeschlagen")
             return False
     
-    def graphql_request(self, query: str, variables: Optional[Dict] = None) -> Optional[Dict]:
-        """
-        Führt eine GraphQL-Anfrage an die Stash-API aus
-        
-        Args:
-            query: Die GraphQL-Abfrage
-            variables: Optionale Variablen für die Abfrage
-            
-        Returns:
-            Optional[Dict]: Die Antwortdaten oder None bei Fehler
-        """
-        headers = {
-            "Content-Type": "application/json",
-            "ApiKey": self.api_key
-        }
-        
-        payload = {
-            "query": query,
-            "variables": variables or {}
-        }
-        
-        try:
-            response = requests.post(
-                self.graphql_endpoint,
-                headers=headers,
-                data=json.dumps(payload),
-                verify=self.ssl_verify
-            )
-            
-            if response.status_code == 200:
-                result = response.json()
-                if "errors" in result and result["errors"]:
-                    error_messages = [error.get("message", "Unbekannter Fehler") for error in result["errors"]]
-                    logger.error(f"GraphQL Fehler: {', '.join(error_messages)}")
-                    return None
-                    
-                if "data" in result:
-                    return result["data"]
-                return {}
-            else:
-                logger.error(f"Request-Fehler: Status Code {response.status_code}")
-                return None
-                
-        except Exception as e:
-            logger.exception(f"Fehler bei der GraphQL-Anfrage: {str(e)}")
-            return None
+def graphql_request(query, variables=None):
+    headers = {
+        "Content-Type": "application/json",
+        "ApiKey": CONFIG["api_key"]
+    }
     
-    def get_all_performers(self, filter_favorites: bool = False) -> List[Dict]:
-        """
-        Ruft alle Performer von der Stash-API ab
+    try:
+        response = requests.post(
+            f"{CONFIG['stash_url']}/graphql",
+            headers=headers,
+            data=json.dumps({
+                "query": query,
+                "variables": variables
+            })
+        )
         
-        Args:
-            filter_favorites: Wenn True, werden nur Favoriten zurückgegeben
-            
-        Returns:
-            List[Dict]: Liste der Performer oder leere Liste bei Fehler
-        """
-        query = """
-        query getAllPerformers($filter: PerformerFilterType) {
-            allPerformers(filter: $filter) {
-                id
+        if response.status_code == 200:
+            result = response.json()
+            if "errors" in result and result["errors"]:
+                print(f"GraphQL Fehler: {result['errors']}")
+                return None
+            return result["data"]
+        else:
+            print(f"Fehler: Status Code {response.status_code}")
+            return None
+    except Exception as e:
+        print(f"Fehler bei der Anfrage: {str(e)}")
+        return None
+    
+def get_all_performers():
+    query = """
+    query {
+        allPerformers {
+            id
+            name
+            birthdate
+            gender
+            country
+            height_cm
+            weight
+            measurements
+            scene_count
+            rating100
+            favorite
+            tags {
                 name
-                gender
-                url
-                twitter
-                instagram
-                birthdate
-                ethnicity
-                country
-                eye_color
-                height_cm
-                weight
-                measurements
-                fake_tits
-                career_length
-                tattoos
-                piercings
-                aliases
-                favorite
-                rating100
-                details
-                death_date
-                hair_color
-                image_path
-                scene_count
-                stash_ids {
-                    endpoint
-                    stash_id
-                }
-                tags {
-                    id
-                    name
-                }
-                o_counter
-                created_at
-                updated_at
             }
+            o_counter
         }
-        """
-        
-        variables = {}
-        if filter_favorites:
-            variables["filter"] = {"filter_favorites": True}
-        
-        data = self.graphql_request(query, variables)
-        if data and "allPerformers" in data:
-            performers = data["allPerformers"]
-            logger.info(f"{len(performers)} Performer abgerufen")
-            return performers
-        
-        logger.warning("Keine Performer abgerufen")
+    }
+    """
+    
+    data = graphql_request(query)
+    if not data or not data["allPerformers"]:
         return []
+    
+    performers = data["allPerformers"]
+    return [process_performer(p) for p in performers]
     
     def get_all_scenes(self, filter_favorites: bool = False) -> List[Dict]:
         """
